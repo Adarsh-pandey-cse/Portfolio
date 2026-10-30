@@ -1,5 +1,9 @@
-# Adarsh Pandey — Creative Developer, Designer & AI/ML Technologist
+﻿# Adarsh Pandey — Creative Developer, Designer & AI/ML Technologist
 
+[![Live Portfolio](https://img.shields.io/badge/Live%20Demo-pandeyadarsh.in-brightgreen.svg?style=for-the-badge)](https://pandeyadarsh.in)
+[![HackIndia Skill](https://img.shields.io/badge/HackIndia%20Skill-Build%20a%20portfolio%20that%20gets%20replies-orange.svg)](https://hackindia.org/skills/build-a-portfolio-that-gets-replies)
+
+> **Live Demo:** [https://pandeyadarsh.in](https://pandeyadarsh.in)
 > **Neo-Brutalist Engineering & Design Portfolio**  
 > Built with React 18, TypeScript, Tailwind CSS, Framer Motion, and Vite.
 
