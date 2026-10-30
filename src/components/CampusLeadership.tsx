@@ -1,3 +1,4 @@
+import { motion } from 'framer-motion'
 import MotionReveal from './MotionReveal'
 import {
   Printer,
@@ -113,16 +114,19 @@ export default function CampusLeadership() {
             {stats.map((stat) => {
               const Icon = stat.icon
               return (
-                <div
+                <motion.div
                   key={stat.label}
-                  className="p-space-md bg-white border-2 border-border-dark rounded-xl shadow-[4px_4px_0px_#111111] text-center flex flex-col items-center hover:-translate-y-1 transition-transform"
+                  className="p-space-md bg-white border-2 border-border-dark rounded-xl shadow-[4px_4px_0px_#111111] text-center flex flex-col items-center cursor-pointer transition-all"
+                  whileHover={{ y: -4, scale: 1.03, boxShadow: '6px 6px 0px #1833FF' }}
+                  whileTap={{ scale: 0.97 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                 >
                   <div className="w-10 h-10 rounded-lg bg-surface-container border border-border-dark flex items-center justify-center mb-2 shadow-[2px_2px_0px_#111111]">
                     <Icon size={20} className="text-ink-black" />
                   </div>
                   <div className="font-display font-extrabold text-headline-md text-ink-black">{stat.value}</div>
                   <div className="font-mono text-label-sm text-ink-muted uppercase mt-1">{stat.label}</div>
-                </div>
+                </motion.div>
               )
             })}
           </div>
@@ -132,9 +136,11 @@ export default function CampusLeadership() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-space-lg mb-space-xl">
           {clubs.map((club, i) => (
             <MotionReveal key={club.name} delay={i * 0.1}>
-              <div
-                className={`p-space-lg ${club.bg} border-2 border-border-dark rounded-2xl h-full flex flex-col justify-between`}
+              <motion.div
+                className={`p-space-lg ${club.bg} border-2 border-border-dark rounded-2xl h-full flex flex-col justify-between transition-all cursor-default`}
                 style={{ boxShadow: `4px 4px 0px ${club.shadow}` }}
+                whileHover={{ y: -4, scale: 1.01, boxShadow: `6px 6px 0px #1833FF` }}
+                transition={{ type: 'spring', stiffness: 500, damping: 22 }}
               >
                 <div>
                   {/* Club header */}
@@ -177,7 +183,7 @@ export default function CampusLeadership() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </MotionReveal>
           ))}
         </div>
@@ -192,9 +198,11 @@ export default function CampusLeadership() {
         <div className="flex flex-col gap-space-md mb-space-lg">
           {hackathons.map((h, i) => (
             <MotionReveal key={h.title} delay={i * 0.1}>
-              <div
-                className={`p-space-md lg:p-space-lg ${h.bg} border-2 border-border-dark rounded-xl`}
+              <motion.div
+                className={`p-space-md lg:p-space-lg ${h.bg} border-2 border-border-dark rounded-xl transition-all cursor-default`}
                 style={{ boxShadow: `4px 4px 0px ${h.shadow}` }}
+                whileHover={{ y: -3, scale: 1.008, boxShadow: `6px 6px 0px #1833FF` }}
+                transition={{ type: 'spring', stiffness: 500, damping: 22 }}
               >
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-space-md">
                   <div className="flex-1">
@@ -219,7 +227,7 @@ export default function CampusLeadership() {
                     <div className="font-mono text-label-sm text-ink-muted uppercase text-center mt-1">{h.scoreLabel}</div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </MotionReveal>
           ))}
         </div>

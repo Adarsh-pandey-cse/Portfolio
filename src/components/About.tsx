@@ -412,14 +412,15 @@ export default function About() {
                     return (
                       <motion.div
                         key={cert.name}
-                        className="p-3 rounded-2xl border-2 border-border-dark/30 bg-surface-container hover:bg-white hover:border-border-dark hover:shadow-[3px_3px_0px_#111111] transition-all duration-150 flex items-center gap-3 cursor-default"
-                        whileHover={{ x: 2, y: -1 }}
+                        className="p-3 rounded-2xl border-2 border-border-dark/30 bg-surface-container hover:bg-white hover:border-border-dark hover:shadow-[3px_3px_0px_#1833FF] transition-all duration-150 flex items-center gap-3 cursor-pointer group"
+                        whileHover={{ x: 3, y: -2, boxShadow: '4px 4px 0px #1833FF' }}
+                        transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                       >
-                        <div className="w-9 h-9 rounded-xl bg-white border border-border-dark flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#111111]">
+                        <div className="w-9 h-9 rounded-xl bg-white border border-border-dark flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#111111] group-hover:scale-105 group-hover:rotate-6 transition-transform">
                           <Logo size={22} />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-display font-bold text-xs sm:text-sm text-ink-black truncate leading-tight">
+                          <p className="font-display font-bold text-xs sm:text-sm text-ink-black truncate leading-tight group-hover:text-primary transition-colors">
                             {cert.name}
                           </p>
                           <div className="flex items-center gap-2 mt-0.5">
@@ -556,9 +557,9 @@ export default function About() {
                 return (
                   <motion.div
                     key={cat.category}
-                    className={`p-4 sm:p-5 ${cat.color} border-2 border-border-dark rounded-2xl flex flex-col justify-between shadow-[4px_4px_0px_#111111]`}
-                    whileHover={{ y: -3, boxShadow: '6px 6px 0px #111111' }}
-                    transition={{ type: 'spring', stiffness: 350, damping: 20 }}
+                    className={`p-4 sm:p-5 ${cat.color} border-2 border-border-dark rounded-2xl flex flex-col justify-between shadow-[4px_4px_0px_#111111] transition-all`}
+                    whileHover={{ y: -4, boxShadow: '6px 6px 0px #1833FF' }}
+                    transition={{ type: 'spring', stiffness: 450, damping: 20 }}
                   >
                     <div>
                       {/* Card Header: Icon + Badge */}
@@ -584,8 +585,10 @@ export default function About() {
                       {cat.skills.map((skill) => (
                         <motion.span
                           key={skill}
-                          className="px-2 py-1 bg-white border border-border-dark rounded-md font-mono text-[10px] font-bold text-ink-black shadow-[1px_1px_0px_#111111] cursor-default"
-                          whileHover={{ scale: 1.05, y: -1, backgroundColor: '#FDE047' }}
+                          className="px-2 py-1 bg-white border border-border-dark rounded-md font-mono text-[10px] font-bold text-ink-black shadow-[1px_1px_0px_#111111] cursor-pointer select-none"
+                          whileHover={{ scale: 1.08, y: -2, backgroundColor: '#FEF08A', boxShadow: '2px 2px 0px #1833FF' }}
+                          whileTap={{ scale: 0.94 }}
+                          transition={{ duration: 0.1 }}
                         >
                           {skill}
                         </motion.span>

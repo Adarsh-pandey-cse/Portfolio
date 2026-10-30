@@ -112,8 +112,9 @@ export default function Contact() {
                       rel="noopener noreferrer"
                       className={`flex items-center gap-space-md p-space-md ${card.bg} border-2 border-border-dark rounded-xl group transition-all duration-150`}
                       style={{ boxShadow: `4px 4px 0px ${card.shadow}` }}
-                      whileHover={{ x: -2, y: -2, boxShadow: `6px 6px 0px ${card.shadow}` }}
-                      transition={{ duration: 0.15 }}
+                      whileHover={{ x: -3, y: -3, scale: 1.01, boxShadow: '6px 6px 0px #1833FF' }}
+                      whileTap={{ scale: 0.98 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                     >
                       <div className="w-10 h-10 bg-ink-black border-2 border-border-dark rounded-lg flex items-center justify-center shrink-0 shadow-[2px_2px_0px_#111111] group-hover:scale-105 transition-transform">
                         <Icon size={18} className="text-white" />

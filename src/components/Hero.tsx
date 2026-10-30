@@ -143,45 +143,47 @@ export default function Hero() {
           {/* Left: Namaste pill - Larger, bolder & noticeable */}
           <motion.div
             className="inline-flex items-center gap-2 sm:gap-2.5 px-4 sm:px-5 py-1.5 sm:py-2 bg-white border-2 border-border-dark rounded-full shadow-[3px_3px_0px_#111111] hover:-translate-y-0.5 transition-all cursor-default"
-            whileHover={{ y: -2, boxShadow: '4px 4px 0px #111111', scale: 1.02 }}
+            whileHover={{ y: -2, boxShadow: '4px 4px 0px #1833FF', scale: 1.02 }}
             transition={{ type: 'spring', stiffness: 500, damping: 20 }}
           >
             <motion.span
               className="text-base sm:text-lg select-none inline-block origin-bottom-right"
               aria-hidden="true"
-              animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
-              transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut', repeatDelay: 1 }}
+              animate={{ rotate: [0, 16, -10, 16, -6, 12, 0] }}
+              transition={{ repeat: Infinity, duration: 2.2, ease: 'easeInOut', repeatDelay: 1.2 }}
             >
               👋
             </motion.span>
             <span className="font-display font-extrabold text-ink-black text-sm sm:text-[15px] tracking-tight">
               Namaste, I'm Adarsh
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-border-dark" aria-hidden="true" />
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
             <span className="font-mono text-[10.5px] sm:text-[11.5px] text-ink-muted uppercase tracking-wider font-black">
               AVAILABLE WORLDWIDE • REMOTE / ON-SITE
             </span>
           </motion.div>
 
-          {/* Right: 3 Tilted Badges with snappy spring hover */}
+          {/* Right: 3 Tilted Badges with snappy spring hover & continuous subtle floating life */}
           <div className="flex items-center gap-2 flex-wrap">
             <motion.span
               className="pill-tag bg-[#FEF08A] text-ink-black font-mono font-bold shadow-[2px_2px_0px_#111111] cursor-pointer inline-flex items-center gap-1.5 text-xs sm:text-[12px] px-3.5 py-1 sm:py-1.5"
               style={{ transform: 'rotate(-2deg)' }}
-              whileHover={{ scale: 1.08, rotate: -5, y: -2, boxShadow: '3px 3px 0px #111111' }}
+              animate={{ y: [0, -3, 0] }}
+              transition={{ repeat: Infinity, duration: 3.2, ease: 'easeInOut' }}
+              whileHover={{ scale: 1.08, rotate: 0, y: -4, boxShadow: '3.5px 3.5px 0px #1833FF' }}
               whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             >
-              <Sparkles size={12} className="text-amber-700 shrink-0 fill-amber-700" />
+              <Sparkles size={12} className="text-amber-700 shrink-0 fill-amber-700 animate-pulse" />
               <span>B.TECH CSE @ AKTU '28</span>
             </motion.span>
 
             <motion.span
               className="pill-tag bg-[#A7F3D0] text-ink-black font-mono font-bold shadow-[2px_2px_0px_#111111] cursor-pointer inline-flex items-center gap-1.5 text-xs sm:text-[12px] px-3.5 py-1 sm:py-1.5"
               style={{ transform: 'rotate(2deg)' }}
-              whileHover={{ scale: 1.08, rotate: 5, y: -2, boxShadow: '3px 3px 0px #111111' }}
+              animate={{ y: [0, 3, 0] }}
+              transition={{ repeat: Infinity, duration: 3.6, ease: 'easeInOut', delay: 0.3 }}
+              whileHover={{ scale: 1.08, rotate: 0, y: -4, boxShadow: '3.5px 3.5px 0px #1833FF' }}
               whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             >
               <Palette size={12} className="text-emerald-800 shrink-0" />
               <span>DESIGNER + AI/ML</span>
@@ -190,9 +192,10 @@ export default function Hero() {
             <motion.span
               className="hidden md:inline-flex pill-tag bg-[#7DD3FC] text-ink-black font-mono font-bold shadow-[2px_2px_0px_#111111] cursor-pointer items-center gap-1.5 text-xs sm:text-[12px] px-3.5 py-1 sm:py-1.5"
               style={{ transform: 'rotate(-1.5deg)' }}
-              whileHover={{ scale: 1.08, rotate: -4, y: -2, boxShadow: '3px 3px 0px #111111' }}
+              animate={{ y: [0, -3.5, 0] }}
+              transition={{ repeat: Infinity, duration: 3.4, ease: 'easeInOut', delay: 0.6 }}
+              whileHover={{ scale: 1.08, rotate: 0, y: -4, boxShadow: '3.5px 3.5px 0px #1833FF' }}
               whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 18 }}
             >
               <Film size={12} className="text-sky-800 shrink-0" />
               <span>CODE + VIDEO MOTION</span>
@@ -463,11 +466,11 @@ export default function Hero() {
                 <motion.div
                   key={m.label}
                   className={`group px-3 py-2 sm:py-2.5 ${m.bg} border-2 border-border-dark rounded-2xl shadow-[3px_3px_0px_#111111] flex items-center gap-2.5 transition-all cursor-pointer`}
-                  whileHover={{ y: -3, x: -1, boxShadow: '5px 5px 0px #111111' }}
-                  whileTap={{ scale: 0.98 }}
+                  whileHover={{ y: -3.5, x: -1, boxShadow: '5px 5px 0px #1833FF' }}
+                  whileTap={{ scale: 0.97 }}
                   transition={{ type: 'spring', stiffness: 500, damping: 20 }}
                 >
-                  <div className="w-8 h-8 rounded-xl bg-white border border-border-dark flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#111111] group-hover:rotate-12 group-hover:scale-110 transition-transform duration-200">
+                  <div className="w-8 h-8 rounded-xl bg-white border border-border-dark flex items-center justify-center shrink-0 shadow-[1px_1px_0px_#111111] group-hover:rotate-12 group-hover:scale-110 group-hover:shadow-[2px_2px_0px_#1833FF] transition-all duration-200">
                     <Icon size={16} className="text-ink-black" />
                   </div>
                   <div className="flex flex-col leading-tight min-w-0">
@@ -475,7 +478,7 @@ export default function Hero() {
                       <span className="font-display font-black text-xs sm:text-sm text-ink-black truncate">
                         {m.val}
                       </span>
-                      <span className="font-mono text-[8.5px] sm:text-[9px] font-black text-ink-black bg-white/90 px-1.5 py-0.5 rounded border border-border-dark/40 shadow-[0.5px_0.5px_0px_#111111] group-hover:bg-[#111111] group-hover:text-white transition-colors duration-200">
+                      <span className="font-mono text-[8.5px] sm:text-[9px] font-black text-ink-black bg-white/90 px-1.5 py-0.5 rounded border border-border-dark/40 shadow-[0.5px_0.5px_0px_#111111] group-hover:bg-[#1833FF] group-hover:text-white group-hover:border-border-dark transition-colors duration-200">
                         {m.badge}
                       </span>
                     </div>

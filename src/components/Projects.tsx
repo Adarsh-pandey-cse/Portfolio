@@ -32,8 +32,9 @@ function ProjectCard({ project }: { project: Project }) {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col p-space-md border-2 border-border-dark rounded-2xl card-hover"
+      whileHover={{ y: -6, scale: 1.012, boxShadow: '7px 7px 0px #111111' }}
+      transition={{ type: 'spring', stiffness: 450, damping: 22 }}
+      className="flex flex-col p-space-md border-2 border-border-dark rounded-2xl shadow-[4px_4px_0px_#111111] transition-all cursor-default"
       style={{ backgroundColor: project.bgColor }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -152,18 +153,21 @@ export default function Projects() {
           {/* Filter pills */}
           <div className="flex items-center flex-wrap gap-space-xs" role="group" aria-label="Filter projects">
             {filters.map((f) => (
-              <button
+              <motion.button
                 key={f.key}
                 onClick={() => setActiveFilter(f.key)}
-                className={`px-3.5 py-1.5 border-2 border-border-dark rounded-full font-mono text-label-sm uppercase transition-all duration-150 ${
+                className={`px-3.5 py-1.5 border-2 border-border-dark rounded-full font-mono text-label-sm uppercase transition-all duration-150 cursor-pointer ${
                   activeFilter === f.key
                     ? 'bg-ink-black text-white shadow-[2px_2px_0px_#1833FF]'
                     : `bg-surface-container text-ink-black shadow-[2px_2px_0px_#111111] ${f.hoverBg || 'hover:bg-pastel-butter'}`
                 }`}
+                whileHover={{ scale: 1.05, y: -1 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.1 }}
                 aria-pressed={activeFilter === f.key}
               >
                 {f.label}{f.key === 'all' && ` (${projects.length})`}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>

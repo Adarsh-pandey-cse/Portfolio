@@ -69,12 +69,15 @@ export default function Services() {
 
             return (
               <MotionReveal key={service.id} delay={i * 0.08}>
-                <div
+                <motion.div
                   className={`p-space-md lg:p-space-lg bg-white text-ink-black rounded-xl border-2 border-border-dark cursor-pointer transition-colors duration-200 ${
                     isOpen ? '' : service.hoverBg
                   }`}
                   style={{ boxShadow: `4px 4px 0px ${service.shadowColor}` }}
                   onClick={() => toggle(service.id)}
+                  whileHover={{ y: -3, scale: 1.006 }}
+                  whileTap={{ scale: 0.99 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                   role="button"
                   aria-expanded={isOpen}
                   tabIndex={0}
@@ -155,7 +158,7 @@ export default function Services() {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </div>
+                </motion.div>
               </MotionReveal>
             )
           })}

@@ -35,7 +35,7 @@ export default function MotionReveal({
   direction = 'up',
 }: MotionRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const isInView = useInView(ref, { once: true, margin: '-40px' })
 
   const variantMap = {
     up: variants,
@@ -50,7 +50,7 @@ export default function MotionReveal({
       initial="hidden"
       animate={isInView ? 'visible' : 'hidden'}
       variants={variantMap[direction]}
-      transition={{ duration: 0.5, delay, ease: [0.25, 0.1, 0.25, 1] }}
+      transition={{ duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
     >
       {children}
