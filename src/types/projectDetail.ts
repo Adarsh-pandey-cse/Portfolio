@@ -13,6 +13,7 @@ export interface ProjectFeature {
   iconName: string
   badge?: string
   accentBg?: string
+  previewImage?: string
 }
 
 export interface ProjectGalleryItem {
@@ -20,6 +21,7 @@ export interface ProjectGalleryItem {
   title: string
   caption: string
   src: string
+  cloudinaryUrl?: string
   alt: string
   type: 'desktop' | 'mobile' | 'feature'
 }
@@ -46,7 +48,20 @@ export interface ProjectDetailInfo {
   status: string
   role: string
   technologies: string[]
-  liveUrl: string
+  liveUrl?: string
+  inquireUrl?: string
+}
+
+export interface FloatingCardConfig {
+  tag: string
+  title: string
+  subtitle: string
+  tagBg?: string
+  accentBorder?: string
+}
+
+export interface TopBadgeConfig {
+  label: string
 }
 
 export interface ProjectDetailData {
@@ -56,13 +71,18 @@ export interface ProjectDetailData {
   tagline: string
   description: string
   badges: string[]
-  liveUrl: string
+  liveUrl?: string
+  inquireUrl?: string
   role: string
   category: string
   status: string
   timeline: string
+  mockupScreens?: any[]
+  floatingCard?: FloatingCardConfig
+  topBadge?: TopBadgeConfig
   heroImage: {
     src: string
+    cloudinaryUrl?: string
     alt: string
     caption: string
   }

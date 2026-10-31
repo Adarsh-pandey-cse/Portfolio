@@ -3,10 +3,7 @@ import type { ProjectDetailData } from '../../types/projectDetail'
 /**
  * AttendX Dashboard Case Study Data Configuration
  * Centralized asset and content configuration for /projects/attendx
- * 
- * Image replacement:
- * Drop image files into /public/projects/attendx/ matching the paths below,
- * or update the src strings to your hosted image links.
+ * Features actual screenshots from Cloudinary & local storage.
  */
 export const attendxProjectData: ProjectDetailData = {
   id: 'attendx',
@@ -28,9 +25,10 @@ export const attendxProjectData: ProjectDetailData = {
   timeline: '2024 — Present',
 
   heroImage: {
-    src: '/projects/attendx/hero.webp',
-    alt: 'AttendX Dashboard — Executive attendance monitoring & predictive analytics interface',
-    caption: 'Executive Dashboard — Real-time attendance rate, streak badges, and subject breakdowns',
+    src: '/projects/attendx/dashboard_dark.png',
+    cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433843/AttendX_Dark_Mode_Dashboard.png',
+    alt: 'AttendX Dark Mode Executive Dashboard — Real-time attendance rate, streak badges, and subject breakdowns',
+    caption: 'Executive Dashboard — Real-time attendance monitoring, predictive safety buffers & subject matrix',
   },
 
   overview: {
@@ -76,6 +74,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'CheckCircle2',
         badge: 'Core Engine',
         accentBg: 'bg-pastel-butter',
+        previewImage: '/projects/attendx/features/feature_01_tracking.png',
       },
       {
         id: 'students',
@@ -85,6 +84,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'Users',
         badge: 'Directory',
         accentBg: 'bg-pastel-sky',
+        previewImage: '/projects/attendx/features/feature_02_students.png',
       },
       {
         id: 'analytics',
@@ -94,6 +94,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'TrendingUp',
         badge: 'Smart Math',
         accentBg: 'bg-pastel-mint',
+        previewImage: '/projects/attendx/features/feature_03_analytics.png',
       },
       {
         id: 'charts',
@@ -103,6 +104,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'BarChart3',
         badge: 'Visualization',
         accentBg: 'bg-pastel-peach',
+        previewImage: '/projects/attendx/features/feature_04_charts.png',
       },
       {
         id: 'weekly',
@@ -112,6 +114,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'CalendarDays',
         badge: 'Scheduler',
         accentBg: 'bg-pastel-lavender',
+        previewImage: '/projects/attendx/features/feature_05_weekly.png',
       },
       {
         id: 'streaks',
@@ -121,6 +124,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'Flame',
         badge: 'Habit Engine',
         accentBg: 'bg-pastel-butter',
+        previewImage: '/projects/attendx/features/feature_06_streaks.png',
       },
       {
         id: 'badges',
@@ -130,6 +134,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'Award',
         badge: 'Milestones',
         accentBg: 'bg-pastel-mint',
+        previewImage: '/projects/attendx/features/feature_07_badges.png',
       },
       {
         id: 'export',
@@ -139,6 +144,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'FileDown',
         badge: 'Compliance',
         accentBg: 'bg-pastel-sky',
+        previewImage: '/projects/attendx/features/feature_08_export.png',
       },
       {
         id: 'subjects',
@@ -148,6 +154,7 @@ export const attendxProjectData: ProjectDetailData = {
         iconName: 'BookOpenCheck',
         badge: 'Drilldown',
         accentBg: 'bg-pastel-peach',
+        previewImage: '/projects/attendx/features/feature_09_subjects.png',
       },
     ],
   },
@@ -157,60 +164,58 @@ export const attendxProjectData: ProjectDetailData = {
     subheading: 'A closer look at the product interface across core workflows.',
     items: [
       {
-        id: 'gallery-hero',
-        title: 'Primary Executive Overview',
-        caption: 'Central command interface featuring real-time attendance rate, active streak badge, and alert summary.',
-        src: '/projects/attendx/hero.webp',
-        alt: 'AttendX Executive Dashboard Overview',
-        type: 'desktop',
-      },
-      {
-        id: 'gallery-dashboard',
-        title: 'Subject Performance Matrix',
-        caption: 'High-contrast cards displaying individual subject percentages, safe cuts left, and required attendance.',
-        src: '/projects/attendx/dashboard.webp',
-        alt: 'AttendX Subject Performance Matrix',
+        id: 'gallery-dark-mode',
+        title: 'Dark Mode Command Center',
+        caption: 'Primary executive dashboard interface featuring real-time attendance rate, safe cuts buffer, and active streak badges.',
+        src: '/projects/attendx/dashboard_dark.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433843/AttendX_Dark_Mode_Dashboard.png',
+        alt: 'AttendX Dark Mode Command Center',
         type: 'desktop',
       },
       {
         id: 'gallery-analytics',
-        title: 'Predictive Trend Analytics',
-        caption: 'Visual timeline projection forecasting attendance health towards end-of-semester examination gates.',
-        src: '/projects/attendx/analytics.webp',
-        alt: 'AttendX Predictive Trend Analytics',
+        title: 'Dark Mode Predictive Analytics',
+        caption: 'Deep trend visualization illustrating attendance trajectory, absence impact simulations, and weekly lecture performance.',
+        src: '/projects/attendx/analytics_dashboard.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Dark_Mode_Analytics_Dashboard.png',
+        alt: 'AttendX Dark Mode Predictive Analytics Dashboard',
+        type: 'desktop',
+      },
+      {
+        id: 'gallery-subjects',
+        title: 'Subject-Wise Attendance Matrix',
+        caption: 'Granular course breakdown illustrating individual theory vs. lab hours attended, required buffer margins, and 75% thresholds.',
+        src: '/projects/attendx/subject_attendance.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433837/AttendX_Subject_Attendance_Dashboard.png',
+        alt: 'AttendX Subject Attendance Breakdown Matrix',
+        type: 'desktop',
+      },
+      {
+        id: 'gallery-impact',
+        title: 'Attendance Impact & Margin Simulator',
+        caption: 'Algorithmic simulator computing the exact impact of future leaves on semester examination eligibility before absences occur.',
+        src: '/projects/attendx/attendance_impact.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Attendance_Impact_Dashboard.png',
+        alt: 'AttendX Attendance Impact and Absence Simulation Dashboard',
         type: 'desktop',
       },
       {
         id: 'gallery-students',
-        title: 'Student Roster Directory',
-        caption: 'Clean, filterable student list with roll-number indexing, contact metadata, and attendance status chips.',
-        src: '/projects/attendx/students.webp',
-        alt: 'AttendX Student Roster Directory',
+        title: 'Student Management & Roster Directory',
+        caption: 'High-efficiency student roster directory with roll-number indexing, live attendance status chips, and batch records.',
+        src: '/projects/attendx/student_management.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Student_Management_Dashboard.png',
+        alt: 'AttendX Student Management and Directory Dashboard',
         type: 'desktop',
       },
       {
-        id: 'gallery-records',
-        title: 'Daily Attendance Ledger',
-        caption: 'Granular lecture-by-lecture audit log enabling quick modifications and historical review.',
-        src: '/projects/attendx/records.webp',
-        alt: 'AttendX Daily Attendance Ledger',
+        id: 'gallery-pastel',
+        title: 'Radha-Rani Pastel Aesthetic Edition',
+        caption: 'Vibrant, high-contrast pastel theme alternative engineered with soft hues, warm cards, and accessible typography.',
+        src: '/projects/attendx/pastel_dashboard.png',
+        cloudinaryUrl: 'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/Radha-Rani_Pastel_Attendance_Dashboard.png',
+        alt: 'AttendX Radha-Rani Pastel Attendance Dashboard Edition',
         type: 'desktop',
-      },
-      {
-        id: 'gallery-reports',
-        title: 'Dossier & PDF Export Engine',
-        caption: 'Standardized institutional print preview with attendance percentages, official seals, and signatures.',
-        src: '/projects/attendx/reports.webp',
-        alt: 'AttendX Dossier and PDF Export Engine',
-        type: 'desktop',
-      },
-      {
-        id: 'gallery-mobile',
-        title: 'Responsive Mobile Experience',
-        caption: 'Thumb-friendly touch UI optimized for rapid logging on smartphones between lectures.',
-        src: '/projects/attendx/mobile.webp',
-        alt: 'AttendX Responsive Mobile Interface',
-        type: 'mobile',
       },
     ],
   },

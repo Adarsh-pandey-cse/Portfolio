@@ -12,6 +12,7 @@ export interface Project {
   statusLabel: string
   liveUrl?: string
   caseStudyUrl?: string
+  image?: string
   waMessage?: string
   bgColor: string
   accentColor: string

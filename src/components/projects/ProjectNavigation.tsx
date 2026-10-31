@@ -5,10 +5,11 @@ import { Link } from 'react-router-dom'
 
 interface ProjectNavigationProps {
   title: string
-  liveUrl: string
+  liveUrl?: string
+  inquireUrl?: string
 }
 
-export default function ProjectNavigation({ title, liveUrl }: ProjectNavigationProps) {
+export default function ProjectNavigation({ title, liveUrl, inquireUrl }: ProjectNavigationProps) {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeSection, setActiveSection] = useState('')
@@ -116,19 +117,38 @@ export default function ProjectNavigation({ title, liveUrl }: ProjectNavigationP
           })}
         </nav>
 
-        {/* Right: Live View Button & Mobile Toggle */}
+        {/* Right: Live View or Inquire Button & Mobile Toggle */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-          <motion.a
-            href={liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-4 sm:px-4.5 py-1.5 sm:py-2 bg-[#1833FF] hover:bg-[#001DCC] text-white border-2 border-border-dark rounded-full font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-[2.5px_2.5px_0px_#111111] hover:shadow-[4px_4px_0px_#111111] transition-all"
-            whileHover={{ scale: 1.03, y: -1 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <span>View Live</span>
-            <ExternalLink size={13} className="stroke-[2.5]" />
-          </motion.a>
+          {liveUrl ? (
+            <motion.a
+              href={liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 sm:px-4.5 py-1.5 sm:py-2 bg-[#1833FF] hover:bg-[#001DCC] text-white border-2 border-border-dark rounded-full font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-[2.5px_2.5px_0px_#111111] hover:shadow-[4px_4px_0px_#111111] transition-all"
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <span>View Live</span>
+              <ExternalLink size={13} className="stroke-[2.5]" />
+            </motion.a>
+          ) : (
+            <motion.a
+              href={
+                inquireUrl ||
+                `https://wa.me/918800795476?text=${encodeURIComponent(
+                  `Hello Adarsh, I am interested in ${title}`
+                )}`
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-4 sm:px-4.5 py-1.5 sm:py-2 bg-[#111111] hover:bg-black text-white border-2 border-border-dark rounded-full font-mono text-[11px] sm:text-xs font-black uppercase tracking-wider shadow-[2.5px_2.5px_0px_#FACC15] hover:shadow-[4px_4px_0px_#FACC15] transition-all"
+              whileHover={{ scale: 1.03, y: -1 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              <span>Inquire</span>
+              <ExternalLink size={13} className="stroke-[2.5]" />
+            </motion.a>
+          )}
 
           {/* Mobile hamburger */}
           <button

@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom'
 interface ProjectCTAProps {
   heading: string
   description: string
-  liveUrl: string
+  liveUrl?: string
+  inquireUrl?: string
   primaryText?: string
   secondaryText?: string
 }
@@ -14,6 +15,7 @@ export default function ProjectCTA({
   heading,
   description,
   liveUrl,
+  inquireUrl,
   primaryText = 'OPEN LIVE APPLICATION',
   secondaryText = 'BACK TO ALL PROJECTS',
 }: ProjectCTAProps) {
@@ -49,9 +51,13 @@ export default function ProjectCTA({
 
           {/* Action Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-3.5 pt-2">
-            {/* Primary Live URL */}
+            {/* Primary Action Button */}
             <motion.a
-              href={liveUrl}
+              href={
+                liveUrl ||
+                inquireUrl ||
+                'https://wa.me/918800795476?text=Hello%20Adarsh,%20I%20would%20like%20to%20discuss%20a%20branding%20project'
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 bg-ink-black hover:bg-black text-white border-2 border-border-dark rounded-full font-mono text-xs sm:text-sm font-black uppercase tracking-wider shadow-[4px_4px_0px_#1833FF] hover:shadow-[6px_6px_0px_#1833FF] transition-all"

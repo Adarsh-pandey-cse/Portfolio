@@ -1,261 +1,345 @@
-import { motion } from 'framer-motion'
+import { useState, useEffect, useCallback } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
-  TrendingUp,
-  Flame,
-  Award,
-  Users,
-  CheckCircle2,
-  AlertCircle,
-  ExternalLink,
-  Layers,
+  ChevronLeft,
+  ChevronRight,
   Sparkles,
-  BarChart2,
+  ExternalLink,
 } from 'lucide-react'
+
+import type { FloatingCardConfig, TopBadgeConfig } from '../../types/projectDetail'
+
+export interface MockupSlide {
+  id: string
+  title: string
+  url: string
+  src: string
+  fallback: string
+  tag: string
+  accentColor: string
+}
+
+export const DEFAULT_HERO_SCREENS: MockupSlide[] = [
+  {
+    id: 'dashboard',
+    title: 'Command Center',
+    url: 'attendx9.netlify.app/dashboard',
+    src: '/projects/attendx/dashboard_dark.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433843/AttendX_Dark_Mode_Dashboard.png',
+    tag: 'EXECUTIVE OVERVIEW',
+    accentColor: '#1833FF',
+  },
+  {
+    id: 'analytics',
+    title: 'Predictive Analytics',
+    url: 'attendx9.netlify.app/analytics',
+    src: '/projects/attendx/analytics_dashboard.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Dark_Mode_Analytics_Dashboard.png',
+    tag: 'SMART VELOCITY',
+    accentColor: '#10B981',
+  },
+  {
+    id: 'subjects',
+    title: 'Subject Matrix',
+    url: 'attendx9.netlify.app/subjects',
+    src: '/projects/attendx/subject_attendance.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433837/AttendX_Subject_Attendance_Dashboard.png',
+    tag: 'TARGET RATIOS',
+    accentColor: '#F59E0B',
+  },
+  {
+    id: 'impact',
+    title: 'Margin Simulator',
+    url: 'attendx9.netlify.app/impact',
+    src: '/projects/attendx/attendance_impact.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Attendance_Impact_Dashboard.png',
+    tag: 'SAFE CUT BUFFER',
+    accentColor: '#0284C7',
+  },
+  {
+    id: 'students',
+    title: 'Student Roster',
+    url: 'attendx9.netlify.app/students',
+    src: '/projects/attendx/student_management.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/AttendX_Student_Management_Dashboard.png',
+    tag: 'LIVE DIRECTORY',
+    accentColor: '#8B5CF6',
+  },
+  {
+    id: 'pastel',
+    title: 'Pastel Aesthetic Edition',
+    url: 'attendx9.netlify.app/pastel',
+    src: '/projects/attendx/pastel_dashboard.png',
+    fallback:
+      'https://res.cloudinary.com/dkgb78kb/image/upload/v1793433836/Radha-Rani_Pastel_Attendance_Dashboard.png',
+    tag: 'EDITORIAL THEME',
+    accentColor: '#EC4899',
+  },
+]
 
 interface DashboardMockupProps {
   className?: string
   interactive?: boolean
   showFloatingPreview?: boolean
+  screens?: MockupSlide[]
+  imageSrc?: string
+  cloudinaryFallback?: string
+  floatingCard?: FloatingCardConfig
+  topBadge?: TopBadgeConfig
+}
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 60 : -60,
+    opacity: 0,
+    scale: 0.985,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 60 : -60,
+    opacity: 0,
+    scale: 0.985,
+  }),
 }
 
 export default function DashboardMockup({
   className = '',
   interactive = true,
   showFloatingPreview = true,
+  screens = DEFAULT_HERO_SCREENS,
+  imageSrc,
+  cloudinaryFallback,
+  floatingCard,
+  topBadge,
 }: DashboardMockupProps) {
+  // If a single imageSrc is provided and screens not overridden, use screens with imageSrc as primary
+  const slides = screens && screens.length > 0 ? screens : DEFAULT_HERO_SCREENS
+
+  const [[page, direction], setPage] = useState<[number, number]>([0, 0])
+  const [isHovered, setIsHovered] = useState(false)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
+
+  const currentIndex = ((page % slides.length) + slides.length) % slides.length
+  const currentSlide = slides[currentIndex]
+
+  const paginate = useCallback(
+    (newDirection: number) => {
+      setPage(([prevPage]) => [prevPage + newDirection, newDirection])
+    },
+    []
+  )
+
+  const jumpTo = (index: number) => {
+    if (index === currentIndex) return
+    const dir = index > currentIndex ? 1 : -1
+    setPage([index, dir])
+  }
+
+  // Soft auto-play interval: cycles every 4.6 seconds, pauses on hover
+  useEffect(() => {
+    if (isHovered) return
+    const timer = setInterval(() => {
+      paginate(1)
+    }, 4600)
+    return () => clearInterval(timer)
+  }, [isHovered, paginate])
+
+  const getSource = (slide: MockupSlide) => {
+    if (imageErrors[slide.id]) {
+      return slide.fallback
+    }
+    return slide.src
+  }
+
   return (
-    <div className={`relative w-full select-none ${className}`}>
+    <div
+      className={`relative w-full select-none ${className}`}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {/* ── Desktop Browser Window Frame ── */}
-      <div className="relative w-full bg-[#0B0F19] border-2 border-border-dark rounded-2xl sm:rounded-3xl shadow-[8px_8px_0px_#111111] overflow-hidden text-slate-100">
+      <motion.div
+        className="relative w-full bg-[#0B0F19] border-2 border-border-dark rounded-2xl sm:rounded-3xl shadow-[8px_8px_0px_#111111] overflow-hidden text-slate-100 group/mockup"
+        whileHover={interactive ? { y: -5, boxShadow: '10px 10px 0px #1833FF' } : undefined}
+        transition={{ type: 'spring', stiffness: 450, damping: 24 }}
+      >
         {/* Browser Top Chrome Header */}
-        <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 bg-[#0F172A] border-b-2 border-border-dark">
-          {/* Traffic lights */}
-          <div className="flex items-center gap-1.5">
+        <div className="flex items-center justify-between px-3.5 sm:px-4 py-2.5 bg-[#0F172A] border-b-2 border-border-dark relative z-10">
+          {/* Traffic light window controls */}
+          <div className="flex items-center gap-1.5 shrink-0">
             <span className="w-2.5 h-2.5 rounded-full bg-[#EF4444] border border-black/40" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#F59E0B] border border-black/40" />
             <span className="w-2.5 h-2.5 rounded-full bg-[#10B981] border border-black/40" />
           </div>
 
-          {/* Fake URL Bar */}
-          <div className="flex items-center gap-2 px-3 py-1 bg-[#1E293B] rounded-full border border-slate-700/60 max-w-[240px] sm:max-w-[280px] w-full mx-2">
+          {/* Dynamic URL Bar with synchronized path */}
+          <div className="flex items-center gap-2 px-3 py-1 bg-[#1E293B] rounded-full border border-slate-700/60 max-w-[260px] sm:max-w-[320px] w-full mx-2 overflow-hidden">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="font-mono text-[10px] sm:text-[11px] text-slate-300 truncate font-medium">
-              attendx9.netlify.app/dashboard
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={currentSlide.url}
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -4 }}
+                transition={{ duration: 0.22, ease: 'easeOut' }}
+                className="font-mono text-[10px] sm:text-[11px] text-slate-300 truncate font-medium"
+              >
+                {currentSlide.url}
+              </motion.span>
+            </AnimatePresence>
+          </div>
+
+          {/* Dynamic Version / Screen Tag badge */}
+          <div className="shrink-0 flex items-center gap-1.5">
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={currentSlide.tag}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ duration: 0.2 }}
+                className="hidden sm:inline-flex px-2 py-0.5 text-white font-mono text-[9px] font-bold uppercase rounded border border-border-dark shadow-[1px_1px_0px_#111111]"
+                style={{ backgroundColor: currentSlide.accentColor }}
+              >
+                {currentSlide.tag}
+              </motion.span>
+            </AnimatePresence>
+            <span className="px-1.5 py-0.5 bg-black/60 text-slate-300 font-mono text-[9px] font-bold rounded border border-slate-700">
+              {String(currentIndex + 1).padStart(2, '0')}/{String(slides.length).padStart(2, '0')}
             </span>
           </div>
-
-          {/* Version badge */}
-          <span className="hidden sm:inline-flex px-2 py-0.5 bg-[#1833FF] text-white font-mono text-[9px] font-bold uppercase rounded border border-border-dark shadow-[1px_1px_0px_#111111]">
-            V2.4 LIVE
-          </span>
         </div>
 
-        {/* Dashboard Content Container */}
-        <div className="p-3.5 sm:p-5 flex flex-col gap-3.5 sm:gap-4 bg-[#0B0F19]">
-          {/* Top Sub-Nav: Welcome & Quick Metrics */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-3 border-b border-slate-800">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-[#FEF08A] text-ink-black font-mono text-[9.5px] font-black uppercase rounded shadow-[1px_1px_0px_#111111]">
-                  ACADEMIC YEAR 2024-25
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">Semester IV</span>
-              </div>
-              <h4 className="font-display font-extrabold text-base sm:text-lg text-white mt-0.5">
-                Executive Attendance Command
-              </h4>
-            </div>
+        {/* Sliding Image Viewport */}
+        <div className="relative w-full aspect-[16/10] overflow-hidden bg-[#0B0F19] flex items-center justify-center">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={currentSlide.id}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: 'spring', stiffness: 320, damping: 32 },
+                opacity: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+                scale: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+              }}
+              className="absolute inset-0 w-full h-full flex items-center justify-center"
+            >
+              <img
+                src={getSource(currentSlide)}
+                alt={currentSlide.title}
+                className="w-full h-full object-cover object-top select-none group-hover/mockup:scale-[1.02] transition-transform duration-500 ease-out"
+                onError={() => {
+                  setImageErrors((prev) => ({ ...prev, [currentSlide.id]: true }))
+                }}
+              />
+            </motion.div>
+          </AnimatePresence>
 
-            {/* Quick Status Chips */}
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-900 border border-slate-800 rounded-lg">
-                <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                <span className="font-mono text-[10px] text-slate-300 font-bold">STATUS: SAFE</span>
-              </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                <Flame size={12} className="text-amber-400 fill-amber-400" />
-                <span className="font-mono text-[10px] text-amber-300 font-bold">18 DAYS STREAK</span>
-              </div>
-            </div>
-          </div>
+          {/* Gentle vignette at bottom for seamless depth */}
+          <div className="absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-[#0B0F19]/85 via-[#0B0F19]/40 to-transparent pointer-events-none z-10" />
 
-          {/* Main 4 Metric Cards Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5">
-            {/* Metric 1: Overall Rate */}
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#0F172A] border border-slate-800 flex flex-col justify-between shadow-sm">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">Overall Rate</span>
-                <TrendingUp size={13} className="text-emerald-400" />
-              </div>
-              <div className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="font-display font-extrabold text-xl sm:text-2xl text-emerald-400 leading-none">
-                  96.4%
-                </span>
-                <span className="font-mono text-[8.5px] text-slate-400">(&gt;75% Req)</span>
-              </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div className="bg-emerald-400 h-full rounded-full" style={{ width: '96.4%' }} />
-              </div>
-            </div>
+          {/* Left Arrow Button (Appears on hover) */}
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation()
+              paginate(-1)
+            }}
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/75 hover:bg-[#1833FF] text-white border border-white/20 flex items-center justify-center z-20 cursor-pointer shadow-md backdrop-blur-sm"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={18} className="stroke-[2.5]" />
+          </motion.button>
 
-            {/* Metric 2: Safe Absence Margin */}
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#0F172A] border border-slate-800 flex flex-col justify-between shadow-sm">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">Safe Cuts Left</span>
-                <CheckCircle2 size={13} className="text-sky-400" />
-              </div>
-              <div className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="font-display font-extrabold text-xl sm:text-2xl text-sky-400 leading-none">
-                  14
-                </span>
-                <span className="font-mono text-[8.5px] text-slate-400">Lectures</span>
-              </div>
-              <span className="font-mono text-[8.5px] text-slate-400 mt-2">Buffer remains above 75%</span>
-            </div>
+          {/* Right Arrow Button (Appears on hover) */}
+          <motion.button
+            onClick={(e) => {
+              e.stopPropagation()
+              paginate(1)
+            }}
+            initial={{ opacity: 0, x: 10 }}
+            animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 10 }}
+            transition={{ duration: 0.2 }}
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/75 hover:bg-[#1833FF] text-white border border-white/20 flex items-center justify-center z-20 cursor-pointer shadow-md backdrop-blur-sm"
+            aria-label="Next slide"
+          >
+            <ChevronRight size={18} className="stroke-[2.5]" />
+          </motion.button>
 
-            {/* Metric 3: Lectures Attended */}
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#0F172A] border border-slate-800 flex flex-col justify-between shadow-sm">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">Attended / Total</span>
-                <Layers size={13} className="text-pastel-butter" />
-              </div>
-              <div className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="font-display font-extrabold text-xl sm:text-2xl text-white leading-none">
-                  134
-                </span>
-                <span className="font-mono text-[10px] text-slate-400">/ 139</span>
-              </div>
-              <span className="font-mono text-[8.5px] text-slate-400 mt-2">5 absences recorded</span>
-            </div>
-
-            {/* Metric 4: Weekly Consistency */}
-            <div className="p-2.5 sm:p-3 rounded-xl bg-[#0F172A] border border-slate-800 flex flex-col justify-between shadow-sm">
-              <div className="flex items-center justify-between text-slate-400">
-                <span className="font-mono text-[9px] uppercase font-bold tracking-wider">Consistency Tier</span>
-                <Award size={13} className="text-amber-400" />
-              </div>
-              <div className="mt-1.5 flex items-baseline gap-1.5">
-                <span className="font-display font-extrabold text-base sm:text-lg text-amber-300 leading-none">
-                  Tier 1 Elite
-                </span>
-              </div>
-              <span className="font-mono text-[8.5px] text-emerald-400 mt-2 font-bold">100% Weekly Streak</span>
-            </div>
-          </div>
-
-          {/* Lower Row: Subject Breakdown Table & Weekly Visual Chart */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-            {/* Left 7 Cols: Subject Breakdown */}
-            <div className="lg:col-span-7 bg-[#0F172A] border border-slate-800 rounded-xl p-3 flex flex-col gap-2">
-              <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
-                <span className="font-mono text-[9.5px] text-slate-300 uppercase font-bold">
-                  Subject-Wise Drilldown
-                </span>
-                <span className="font-mono text-[8.5px] text-slate-500">Auto-calculated</span>
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                {[
-                  { name: 'Computer Networks', attended: 28, total: 29, pct: '96.5%', color: '#10B981', tag: 'Theory' },
-                  { name: 'Operating Systems', attended: 32, total: 33, pct: '97.0%', color: '#10B981', tag: 'Core' },
-                  { name: 'Algorithms Lab', attended: 16, total: 16, pct: '100%', color: '#38BDF8', tag: 'Practical' },
-                  { name: 'Machine Learning', attended: 26, total: 28, pct: '92.8%', color: '#10B981', tag: 'Elective' },
-                ].map((s) => (
-                  <div
-                    key={s.name}
-                    className="flex items-center justify-between p-1.5 bg-[#0B0F19] rounded-lg border border-slate-800/80 text-[11px]"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: s.color }} />
-                      <span className="font-medium text-slate-200">{s.name}</span>
-                      <span className="font-mono text-[8px] px-1 py-0.2 bg-slate-800 text-slate-400 rounded">
-                        {s.tag}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-mono text-[10px] text-slate-400">
-                        {s.attended}/{s.total}
-                      </span>
-                      <span className="font-mono text-[10px] font-bold text-white px-1.5 py-0.5 rounded bg-slate-800">
-                        {s.pct}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Right 5 Cols: Weekly Trend Visual Bar Chart */}
-            <div className="lg:col-span-5 bg-[#0F172A] border border-slate-800 rounded-xl p-3 flex flex-col justify-between gap-2">
-              <div className="flex items-center justify-between pb-1.5 border-b border-slate-800">
-                <span className="font-mono text-[9.5px] text-slate-300 uppercase font-bold">
-                  Weekly Attendance Velocity
-                </span>
-                <BarChart2 size={12} className="text-slate-400" />
-              </div>
-
-              {/* Bar visualization */}
-              <div className="flex items-end justify-between gap-1.5 h-24 pt-2">
-                {[
-                  { day: 'Mon', h: '95%', val: '5/5' },
-                  { day: 'Tue', h: '100%', val: '6/6' },
-                  { day: 'Wed', h: '85%', val: '4/5' },
-                  { day: 'Thu', h: '100%', val: '5/5' },
-                  { day: 'Fri', h: '100%', val: '5/5' },
-                  { day: 'Sat', h: '90%', val: '3/3' },
-                ].map((col) => (
-                  <div key={col.day} className="flex-1 flex flex-col items-center gap-1 h-full justify-end">
-                    <span className="font-mono text-[7px] text-slate-400">{col.val}</span>
-                    <div
-                      className="w-full bg-gradient-to-t from-[#1833FF] to-[#38BDF8] rounded-t-sm transition-all duration-300"
-                      style={{ height: col.h }}
-                    />
-                    <span className="font-mono text-[8.5px] text-slate-400">{col.day}</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="pt-1 border-t border-slate-800/80 flex items-center justify-between font-mono text-[8.5px] text-slate-400">
-                <span>Target: 75% Threshold</span>
-                <span className="text-emerald-400 font-bold">Passing +21.4%</span>
-              </div>
+          {/* Bottom Interactive Slide Indicator Dots */}
+          <div className="absolute bottom-2.5 inset-x-0 flex items-center justify-center gap-1.5 z-20 pointer-events-auto">
+            <div className="flex items-center gap-1 px-2.5 py-1 bg-black/70 backdrop-blur-md rounded-full border border-white/15 shadow-sm">
+              {slides.map((s, idx) => (
+                <button
+                  key={s.id}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    jumpTo(idx)
+                  }}
+                  className={`transition-all duration-300 rounded-full cursor-pointer ${
+                    currentIndex === idx
+                      ? 'w-6 h-2 bg-[#FEF08A] shadow-[0_0_8px_#FEF08A]'
+                      : 'w-2 h-2 bg-white/40 hover:bg-white/80'
+                  }`}
+                  aria-label={`Jump to slide ${idx + 1}: ${s.title}`}
+                />
+              ))}
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* ── Secondary Floating Analytics Badge (Bottom-Right) ── */}
       {showFloatingPreview && (
         <motion.div
-          className="absolute -bottom-5 -right-3 sm:-right-5 bg-white text-ink-black border-2 border-border-dark rounded-2xl p-3 shadow-[5px_5px_0px_#1833FF] max-w-[210px] hidden sm:flex flex-col gap-1.5 z-20 pointer-events-none"
+          className="absolute -bottom-5 -right-3 sm:-right-5 bg-white text-ink-black border-2 border-border-dark rounded-2xl p-3 shadow-[5px_5px_0px_#1833FF] max-w-[215px] hidden sm:flex flex-col gap-1.5 z-20 pointer-events-none"
           animate={{ y: [0, -6, 0] }}
           transition={{ repeat: Infinity, duration: 4.5, ease: 'easeInOut' }}
         >
           <div className="flex items-center justify-between">
-            <span className="px-1.5 py-0.5 bg-[#FEF08A] text-ink-black font-mono text-[8.5px] font-black uppercase rounded border border-border-dark">
-              LIVE BUFFER
+            <span
+              className="px-1.5 py-0.5 text-ink-black font-mono text-[8.5px] font-black uppercase rounded border border-border-dark"
+              style={{ backgroundColor: floatingCard?.tagBg || '#FEF08A' }}
+            >
+              {floatingCard?.tag || 'LIVE BUFFER'}
             </span>
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
           </div>
           <div className="font-display font-extrabold text-sm text-ink-black leading-tight">
-            14 Safe Cuts Left
+            {floatingCard?.title || '14 Safe Cuts Left'}
           </div>
           <div className="font-mono text-[9px] text-ink-muted leading-tight">
-            Attendance rate 96.4% stays safely above academic threshold.
+            {floatingCard?.subtitle || 'Attendance rate 96.4% stays safely above academic threshold.'}
           </div>
         </motion.div>
       )}
 
-      {/* ── Floating Badge Top Left: Smart Analytics Engine ── */}
+      {/* ── Floating Badge Top Left ── */}
       {showFloatingPreview && (
         <motion.div
-          className="absolute -top-3.5 -left-3 sm:-left-4 bg-[#74DEB6] text-ink-black border-2 border-border-dark rounded-full px-3 py-1 shadow-[3px_3px_0px_#111111] hidden md:flex items-center gap-1.5 z-20 pointer-events-none"
-          animate={{ y: [0, 5, 0] }}
+          className="absolute -top-3 -left-3 sm:-left-4 bg-[#74DEB6] text-ink-black border-2 border-border-dark rounded-xl px-2.5 py-1 shadow-[3px_3px_0px_#111111] hidden sm:flex items-center gap-1.5 z-20 pointer-events-none"
+          animate={{ y: [0, 4, 0] }}
           transition={{ repeat: Infinity, duration: 4, ease: 'easeInOut', delay: 0.5 }}
         >
-          <Sparkles size={12} className="text-emerald-900 fill-emerald-900" />
-          <span className="font-mono text-[9.5px] font-black uppercase tracking-wider text-ink-black">
-            SUB-SECOND SYNC
+          <Sparkles size={11} className="stroke-[2.5]" />
+          <span className="font-mono text-[9px] font-black uppercase tracking-wider">
+            {topBadge?.label || 'SUB-SECOND SYNC'}
           </span>
         </motion.div>
       )}

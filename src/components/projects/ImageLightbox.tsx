@@ -3,36 +3,64 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ChevronLeft, ChevronRight, Maximize2, ExternalLink } from 'lucide-react'
 import type { ProjectGalleryItem } from '../../types/projectDetail'
 
-interface ImageLightboxProps {
+export interface ImageLightboxProps {
   isOpen: boolean
-  items: ProjectGalleryItem[]
-  currentIndex: number
+  items?: ProjectGalleryItem[]
+  currentIndex?: number
+  imageSrc?: string
+  title?: string
+  caption?: string
   onClose: () => void
-  onNext: () => void
-  onPrev: () => void
-  onSelectIndex: (index: number) => void
+  onNext?: () => void
+  onPrev?: () => void
+  onSelectIndex?: (index: number) => void
 }
 
 export default function ImageLightbox({
   isOpen,
   items,
-  currentIndex,
+  currentIndex = 0,
+  imageSrc,
+  title,
+  caption,
   onClose,
   onNext,
   onPrev,
   onSelectIndex,
 }: ImageLightboxProps) {
-  const currentItem = items[currentIndex]
+  // Support both multi-item gallery mode and single image preview mode
+  const resolvedItems: ProjectGalleryItem[] =
+    items && items.length > 0
+      ? items
+      : imageSrc
+      ? [
+          {
+            id: 'single-preview',
+            title: title || 'Preview',
+            caption: caption || '',
+            src: imageSrc,
+            alt: title || 'Preview',
+            type: 'feature',
+          },
+        ]
+      : []
+
+  const safeIndex =
+    currentIndex >= 0 && currentIndex < resolvedItems.length ? currentIndex : 0
+  const currentItem = resolvedItems[safeIndex]
+  const hasMultiple = resolvedItems.length > 1
 
   // Keyboard navigation: Escape to close, ArrowLeft / ArrowRight to navigate
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (!isOpen) return
       if (e.key === 'Escape') onClose()
-      if (e.key === 'ArrowRight') onNext()
-      if (e.key === 'ArrowLeft') onPrev()
+      if (hasMultiple) {
+        if (e.key === 'ArrowRight' && onNext) onNext()
+        if (e.key === 'ArrowLeft' && onPrev) onPrev()
+      }
     },
-    [isOpen, onClose, onNext, onPrev]
+    [isOpen, onClose, onNext, onPrev, hasMultiple]
   )
 
   useEffect(() => {
@@ -68,10 +96,14 @@ export default function ImageLightbox({
           className="flex items-center justify-between gap-4 max-w-6xl w-full mx-auto pb-3 border-b border-white/15"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Active Image Index */}
+          {/* Active Image Index & Title */}
           <div className="flex items-center gap-2.5">
             <span className="px-3 py-1 bg-pastel-butter text-ink-black font-mono text-xs font-black uppercase rounded-full border border-border-dark shadow-[1px_1px_0px_#111111]">
-              SCREENSHOT {String(currentIndex + 1).padStart(2, '0')} / {String(items.length).padStart(2, '0')}
+              {hasMultiple
+                ? `SCREENSHOT ${String(safeIndex + 1).padStart(2, '0')} / ${String(
+                    resolvedItems.length
+                  ).padStart(2, '0')}`
+                : 'PREVIEW'}
             </span>
             <span className="font-display font-bold text-white text-sm sm:text-base hidden sm:inline truncate max-w-md">
               {currentItem.title}
@@ -96,73 +128,59 @@ export default function ImageLightbox({
           className="relative flex-1 flex items-center justify-center my-auto p-2 sm:p-4 max-w-6xl w-full mx-auto"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Prev Arrow */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onPrev()
-            }}
-            className="absolute left-2 sm:left-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white text-ink-black border-2 border-border-dark rounded-full flex items-center justify-center shadow-[3px_3px_0px_#111111] hover:bg-pastel-butter active:scale-95 transition-all cursor-pointer"
-            aria-label="Previous screenshot"
-          >
-            <ChevronLeft size={22} className="stroke-[2.5]" />
-          </button>
+          {/* Prev Arrow (if multiple) */}
+          {hasMultiple && onPrev && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onPrev()
+              }}
+              className="absolute left-2 sm:left-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white text-ink-black border-2 border-border-dark rounded-full flex items-center justify-center shadow-[3px_3px_0px_#111111] hover:bg-pastel-butter active:scale-95 transition-all cursor-pointer"
+              aria-label="Previous screenshot"
+            >
+              <ChevronLeft size={22} className="stroke-[2.5]" />
+            </button>
+          )}
 
           {/* Image display container */}
           <motion.div
-            key={currentItem.id}
+            key={currentItem.id + (currentItem.src || '')}
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
             className="relative max-h-[75vh] w-full flex flex-col items-center justify-center"
           >
-            <div className="relative max-h-[70vh] w-full rounded-2xl border-2 border-border-dark bg-[#0B0F19] overflow-hidden shadow-[8px_8px_0px_#1833FF] flex items-center justify-center">
+            <div className="relative max-h-[72vh] w-full rounded-2xl border-2 border-border-dark bg-[#0B0F19] overflow-hidden shadow-[8px_8px_0px_#1833FF] flex items-center justify-center p-2">
               <img
                 src={currentItem.src}
-                alt={currentItem.alt}
+                alt={currentItem.alt || currentItem.title}
                 className="max-h-[70vh] w-full object-contain select-none"
                 onError={(e) => {
-                  // Fallback styling when local screenshot file is not uploaded yet
-                  const target = e.currentTarget
-                  target.style.display = 'none'
-                  const fallbackEl = document.getElementById(`lightbox-fallback-${currentItem.id}`)
-                  if (fallbackEl) fallbackEl.style.display = 'flex'
+                  if (
+                    currentItem.cloudinaryUrl &&
+                    e.currentTarget.src !== currentItem.cloudinaryUrl
+                  ) {
+                    e.currentTarget.src = currentItem.cloudinaryUrl
+                  }
                 }}
               />
-
-              {/* Graceful Fallback if user hasn't uploaded image yet */}
-              <div
-                id={`lightbox-fallback-${currentItem.id}`}
-                className="hidden w-full h-[50vh] min-h-[300px] flex-col items-center justify-center gap-3 p-6 text-center bg-[#0B0F19]"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-pastel-butter border-2 border-border-dark flex items-center justify-center text-ink-black shadow-[2px_2px_0px_#1833FF]">
-                  <Maximize2 size={24} />
-                </div>
-                <h4 className="font-display font-extrabold text-xl text-white">
-                  {currentItem.title}
-                </h4>
-                <p className="font-body text-sm text-slate-300 max-w-lg leading-relaxed">
-                  {currentItem.caption}
-                </p>
-                <span className="font-mono text-xs text-pastel-butter bg-white/10 px-3 py-1 rounded-full border border-white/20">
-                  Target asset path: {currentItem.src}
-                </span>
-              </div>
             </div>
           </motion.div>
 
-          {/* Next Arrow */}
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              onNext()
-            }}
-            className="absolute right-2 sm:right-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white text-ink-black border-2 border-border-dark rounded-full flex items-center justify-center shadow-[3px_3px_0px_#111111] hover:bg-pastel-butter active:scale-95 transition-all cursor-pointer"
-            aria-label="Next screenshot"
-          >
-            <ChevronRight size={22} className="stroke-[2.5]" />
-          </button>
+          {/* Next Arrow (if multiple) */}
+          {hasMultiple && onNext && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                onNext()
+              }}
+              className="absolute right-2 sm:right-4 z-20 w-10 h-10 sm:w-12 sm:h-12 bg-white text-ink-black border-2 border-border-dark rounded-full flex items-center justify-center shadow-[3px_3px_0px_#111111] hover:bg-pastel-butter active:scale-95 transition-all cursor-pointer"
+              aria-label="Next screenshot"
+            >
+              <ChevronRight size={22} className="stroke-[2.5]" />
+            </button>
+          )}
         </div>
 
         {/* Bottom Caption Bar with Pagination Dots */}
@@ -174,21 +192,23 @@ export default function ImageLightbox({
             {currentItem.caption}
           </p>
 
-          {/* Pagination Indicators */}
-          <div className="flex items-center gap-2">
-            {items.map((item, idx) => (
-              <button
-                key={item.id}
-                onClick={() => onSelectIndex(idx)}
-                className={`transition-all rounded-full cursor-pointer ${
-                  currentIndex === idx
-                    ? 'w-6 h-2.5 bg-pastel-butter border border-border-dark shadow-[1px_1px_0px_#111111]'
-                    : 'w-2.5 h-2.5 bg-white/30 hover:bg-white/60'
-                }`}
-                aria-label={`Jump to screenshot ${idx + 1}`}
-              />
-            ))}
-          </div>
+          {/* Pagination Indicators (if multiple) */}
+          {hasMultiple && onSelectIndex && (
+            <div className="flex items-center gap-2">
+              {resolvedItems.map((item, idx) => (
+                <button
+                  key={item.id}
+                  onClick={() => onSelectIndex(idx)}
+                  className={`transition-all rounded-full cursor-pointer ${
+                    safeIndex === idx
+                      ? 'w-6 h-2.5 bg-pastel-butter border border-border-dark shadow-[1px_1px_0px_#111111]'
+                      : 'w-2.5 h-2.5 bg-white/30 hover:bg-white/60'
+                  }`}
+                  aria-label={`Jump to screenshot ${idx + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </motion.div>
     </AnimatePresence>

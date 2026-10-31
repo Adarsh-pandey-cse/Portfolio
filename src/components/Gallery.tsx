@@ -56,14 +56,14 @@ const galleryItems: GalleryItem[] = [
     spec: 'A3 Master • 300 DPI CMYK',
   },
   {
-    id: 'raghav-hangtag',
-    title: 'Raghav Heritage Tag',
-    subtitle: 'Artisan Textile Tag',
+    id: 'walls-window-spaces-stationery',
+    title: 'Walls & Window Spaces',
+    subtitle: 'Luxury Business Cards',
     category: 'packaging',
-    categoryLabel: 'Textile Identity',
-    description: 'Dual-sided luxury garment tag featuring artisanal filigree borders and precise die-cut eyelet clearances for cotton twine mounting.',
-    bg: 'bg-pastel-lavender',
-    spec: '350 GSM Matte • Die-Cut Eyelet',
+    categoryLabel: 'Brand Identity',
+    description: '450 GSM obsidian duplex stock featuring 24K hot-stamped gold foil, architectural window emblem, and velvet matte lamination.',
+    bg: 'bg-pastel-butter',
+    spec: '450 GSM Duplex • 24K Gold Foil',
   },
   {
     id: 'neural-ai-stage',
@@ -168,7 +168,7 @@ export default function Gallery() {
                 className={`h-56 ${item.bg} rounded-lg border border-border-dark p-4 flex flex-col justify-between overflow-hidden relative group-hover:brightness-95 transition-all`}
               >
                 <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 bg-ink-black text-white font-mono text-label-sm rounded uppercase">
+                  <span className="px-2 py-0.5 bg-ink-black text-white font-mono text-label-sm rounded uppercase whitespace-nowrap">
                     {item.categoryLabel}
                   </span>
                   <span className="text-ink-black opacity-0 group-hover:opacity-100 transition-opacity">

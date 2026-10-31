@@ -1,13 +1,10 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronLeft,
   ChevronRight,
   Maximize2,
   Sparkles,
-  Layers,
-  Monitor,
-  Smartphone,
   ExternalLink,
 } from 'lucide-react'
 import type { ProjectGalleryItem } from '../../types/projectDetail'
@@ -17,26 +14,65 @@ interface ProjectGalleryProps {
   heading: string
   subheading: string
   items: ProjectGalleryItem[]
+  projectTitle?: string
+}
+
+const slideVariants = {
+  enter: (direction: number) => ({
+    x: direction > 0 ? 80 : -80,
+    opacity: 0,
+    scale: 0.985,
+  }),
+  center: {
+    zIndex: 1,
+    x: 0,
+    opacity: 1,
+    scale: 1,
+  },
+  exit: (direction: number) => ({
+    zIndex: 0,
+    x: direction < 0 ? 80 : -80,
+    opacity: 0,
+    scale: 0.985,
+  }),
 }
 
 export default function ProjectGallery({
   heading,
   subheading,
   items,
+  projectTitle,
 }: ProjectGalleryProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [[page, direction], setPage] = useState<[number, number]>([0, 0])
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [isHovered, setIsHovered] = useState(false)
   const [touchStartX, setTouchStartX] = useState<number | null>(null)
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({})
 
+  const currentIndex = ((page % items.length) + items.length) % items.length
   const currentItem = items[currentIndex]
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev + 1) % items.length)
-  }, [items.length])
+  const paginate = useCallback(
+    (newDirection: number) => {
+      setPage(([prevPage]) => [prevPage + newDirection, newDirection])
+    },
+    []
+  )
 
-  const handlePrev = useCallback(() => {
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)
-  }, [items.length])
+  const jumpTo = (targetIndex: number) => {
+    if (targetIndex === currentIndex) return
+    const dir = targetIndex > currentIndex ? 1 : -1
+    setPage([targetIndex, dir])
+  }
+
+  // Smooth auto-slide timer: advances every 5 seconds, pauses when hovered or lightbox open
+  useEffect(() => {
+    if (isHovered || lightboxOpen) return
+    const timer = setInterval(() => {
+      paginate(1)
+    }, 5000)
+    return () => clearInterval(timer)
+  }, [isHovered, lightboxOpen, paginate])
 
   // Touch swipe support for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -48,10 +84,17 @@ export default function ProjectGallery({
     const touchEndX = e.changedTouches[0].clientX
     const diff = touchStartX - touchEndX
     if (Math.abs(diff) > 45) {
-      if (diff > 0) handleNext()
-      else handlePrev()
+      if (diff > 0) paginate(1)
+      else paginate(-1)
     }
     setTouchStartX(null)
+  }
+
+  const getImageSource = (item: ProjectGalleryItem) => {
+    if (imageErrors[item.id] && item.cloudinaryUrl) {
+      return item.cloudinaryUrl
+    }
+    return item.src
   }
 
   return (
@@ -86,39 +129,45 @@ export default function ProjectGallery({
               </span>
 
               {/* Prev Button */}
-              <button
-                onClick={handlePrev}
-                className="w-10 h-10 bg-white hover:bg-pastel-butter border-2 border-border-dark rounded-full flex items-center justify-center shadow-[2px_2px_0px_#111111] active:scale-95 transition-all cursor-pointer"
+              <motion.button
+                onClick={() => paginate(-1)}
+                className="w-10 h-10 bg-white hover:bg-pastel-butter border-2 border-border-dark rounded-full flex items-center justify-center shadow-[2px_2px_0px_#111111] transition-all cursor-pointer"
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.94 }}
                 aria-label="Previous image"
               >
                 <ChevronLeft size={20} className="stroke-[2.5]" />
-              </button>
+              </motion.button>
 
               {/* Next Button */}
-              <button
-                onClick={handleNext}
-                className="w-10 h-10 bg-white hover:bg-pastel-butter border-2 border-border-dark rounded-full flex items-center justify-center shadow-[2px_2px_0px_#111111] active:scale-95 transition-all cursor-pointer"
+              <motion.button
+                onClick={() => paginate(1)}
+                className="w-10 h-10 bg-white hover:bg-pastel-butter border-2 border-border-dark rounded-full flex items-center justify-center shadow-[2px_2px_0px_#111111] transition-all cursor-pointer"
+                whileHover={{ scale: 1.08 }}
+                whileTap={{ scale: 0.94 }}
                 aria-label="Next image"
               >
                 <ChevronRight size={20} className="stroke-[2.5]" />
-              </button>
+              </motion.button>
             </div>
           </div>
 
           {/* Main Gallery Display Frame */}
           <div
             className="relative w-full rounded-3xl bg-[#0B0F19] border-2 border-border-dark shadow-[8px_8px_0px_#111111] overflow-hidden"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
           >
             {/* Top Frame Status Bar */}
-            <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-[#0F172A] border-b-2 border-border-dark">
+            <div className="flex items-center justify-between px-4 sm:px-6 py-3 bg-[#0F172A] border-b-2 border-border-dark relative">
               <div className="flex items-center gap-2">
                 <span className="w-2.5 h-2.5 rounded-full bg-rose-500 border border-black/30" />
                 <span className="w-2.5 h-2.5 rounded-full bg-amber-500 border border-black/30" />
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 border border-black/30" />
-                <span className="font-mono text-[10px] text-slate-400 ml-2 hidden sm:inline">
-                  AttendX Product View
+                <span className="font-mono text-[10px] text-slate-300 ml-2 hidden sm:inline font-bold">
+                  {projectTitle ? `${projectTitle} UI` : 'Production UI'} • {currentItem.title}
                 </span>
               </div>
 
@@ -132,98 +181,144 @@ export default function ProjectGallery({
                 <Maximize2 size={12} className="stroke-[2.5]" />
                 <span>EXPAND FULLSCREEN</span>
               </motion.button>
+
+              {/* Subtle auto-advance progress line at bottom of header */}
+              {!isHovered && !lightboxOpen && (
+                <motion.div
+                  key={page}
+                  className="absolute bottom-0 left-0 h-[2px] bg-[#FEF08A]/80"
+                  initial={{ width: '0%' }}
+                  animate={{ width: '100%' }}
+                  transition={{ duration: 5, ease: 'linear' }}
+                />
+              )}
             </div>
 
-            {/* Active Screenshot Display Area */}
-            <div className="relative w-full min-h-[320px] sm:min-h-[460px] lg:min-h-[540px] flex items-center justify-center p-3 sm:p-6 bg-[#0B0F19]">
-              <AnimatePresence mode="wait">
+            {/* Active Screenshot Display Area with Soft Sliding Transition */}
+            <div
+              className="relative w-full min-h-[320px] sm:min-h-[460px] lg:min-h-[540px] flex items-center justify-center p-3 sm:p-6 bg-[#0B0F19] cursor-pointer group overflow-hidden"
+              onClick={() => setLightboxOpen(true)}
+              title="Click to view in fullscreen lightbox"
+            >
+              <AnimatePresence initial={false} custom={direction} mode="wait">
                 <motion.div
                   key={currentItem.id}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{
+                    x: { type: 'spring', stiffness: 280, damping: 28 },
+                    opacity: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+                    scale: { duration: 0.38, ease: [0.22, 1, 0.36, 1] },
+                  }}
                   className="relative w-full h-full flex flex-col items-center justify-center"
                 >
-                  {/* Image element with object-contain */}
                   <img
-                    src={currentItem.src}
+                    src={getImageSource(currentItem)}
                     alt={currentItem.alt}
                     loading="lazy"
-                    className="max-h-[500px] w-full object-contain rounded-xl select-none"
-                    onError={(e) => {
-                      const target = e.currentTarget
-                      target.style.display = 'none'
-                      const fallback = document.getElementById(`gallery-fallback-${currentItem.id}`)
-                      if (fallback) fallback.style.display = 'flex'
+                    className="max-h-[540px] w-full object-contain rounded-xl select-none group-hover:scale-[1.01] transition-transform duration-300"
+                    onError={() => {
+                      setImageErrors((prev) => ({ ...prev, [currentItem.id]: true }))
                     }}
                   />
 
-                  {/* Fallback Representation when image file is pending upload */}
-                  <div
-                    id={`gallery-fallback-${currentItem.id}`}
-                    className="hidden w-full max-w-2xl py-12 px-6 flex-col items-center justify-center text-center gap-4 bg-[#0F172A] border-2 border-slate-800 rounded-2xl"
-                  >
-                    <div className="w-14 h-14 rounded-2xl bg-[#FEF08A] border-2 border-border-dark flex items-center justify-center text-ink-black shadow-[3px_3px_0px_#1833FF]">
-                      {currentItem.type === 'mobile' ? (
-                        <Smartphone size={28} className="stroke-[2]" />
-                      ) : (
-                        <Monitor size={28} className="stroke-[2]" />
-                      )}
-                    </div>
-                    <div>
-                      <span className="px-2.5 py-0.5 bg-[#1833FF] text-white font-mono text-[10px] font-bold uppercase rounded border border-border-dark">
-                        {currentItem.type.toUpperCase()} PREVIEW
-                      </span>
-                      <h3 className="font-display font-extrabold text-xl text-white mt-2">
-                        {currentItem.title}
-                      </h3>
-                      <p className="font-body text-xs sm:text-sm text-slate-300 max-w-md mx-auto mt-1 leading-relaxed">
-                        {currentItem.caption}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 flex flex-col items-center gap-1">
-                      <span className="font-mono text-[10px] text-pastel-butter bg-white/10 px-3 py-1 rounded-full border border-white/20">
-                        Drop screenshot to: {currentItem.src}
-                      </span>
-                    </div>
+                  {/* Subtle click hint badge */}
+                  <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white font-mono text-[10px] px-2.5 py-1 rounded-md border border-white/20 flex items-center gap-1 shadow-md pointer-events-none">
+                    <Maximize2 size={11} />
+                    <span>Click to expand</span>
                   </div>
                 </motion.div>
               </AnimatePresence>
+
+              {/* Floating Left Arrow on Gallery Frame */}
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  paginate(-1)
+                }}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/75 hover:bg-[#1833FF] text-white border border-white/20 flex items-center justify-center z-20 cursor-pointer shadow-lg backdrop-blur-sm"
+                aria-label="Previous image"
+              >
+                <ChevronLeft size={22} className="stroke-[2.5]" />
+              </motion.button>
+
+              {/* Floating Right Arrow on Gallery Frame */}
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  paginate(1)
+                }}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: isHovered ? 1 : 0, x: isHovered ? 0 : 10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/75 hover:bg-[#1833FF] text-white border border-white/20 flex items-center justify-center z-20 cursor-pointer shadow-lg backdrop-blur-sm"
+                aria-label="Next image"
+              >
+                <ChevronRight size={22} className="stroke-[2.5]" />
+              </motion.button>
             </div>
 
-            {/* Bottom Caption & Thumbnails Strip */}
-            <div className="p-4 sm:p-5 bg-[#0F172A] border-t-2 border-border-dark flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="max-w-xl">
+            {/* Bottom Caption & Interactive Mini-Thumbnail Strip */}
+            <div className="p-4 sm:p-5 bg-[#0F172A] border-t-2 border-border-dark flex flex-col gap-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
                   <span className="px-2 py-0.5 bg-[#FEF08A] text-ink-black font-mono text-[9px] font-black uppercase rounded shadow-[1px_1px_0px_#111111]">
-                    FEATURED SCREEN
+                    SCREEN {String(currentIndex + 1).padStart(2, '0')}
                   </span>
-                  <h4 className="font-display font-bold text-white text-sm sm:text-base truncate">
+                  <h4 className="font-display font-extrabold text-white text-base truncate">
                     {currentItem.title}
                   </h4>
                 </div>
-                <p className="font-body text-xs text-slate-400 mt-1 leading-relaxed">
+                <p className="font-body text-xs sm:text-sm text-slate-300 leading-relaxed">
                   {currentItem.caption}
                 </p>
               </div>
 
-              {/* Thumbnail Selector Dots */}
-              <div className="flex items-center gap-2 flex-wrap">
-                {items.map((item, idx) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setCurrentIndex(idx)}
-                    className={`px-2.5 py-1 rounded-lg border font-mono text-[11px] font-bold transition-all cursor-pointer ${
-                      currentIndex === idx
-                        ? 'bg-pastel-butter text-ink-black border-border-dark shadow-[2px_2px_0px_#1833FF] scale-105'
-                        : 'bg-[#1E293B] text-slate-300 border-slate-700 hover:bg-slate-800'
-                    }`}
-                  >
-                    {String(idx + 1).padStart(2, '0')}
-                  </button>
-                ))}
+              {/* Visual Thumbnail Strip (All 6 images selectable) */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pt-2 border-t border-slate-800">
+                {items.map((item, idx) => {
+                  const isActive = currentIndex === idx
+                  return (
+                    <motion.button
+                      key={item.id}
+                      onClick={() => jumpTo(idx)}
+                      className={`relative rounded-xl border-2 overflow-hidden text-left p-1.5 transition-all cursor-pointer flex flex-col justify-between h-20 ${
+                        isActive
+                          ? 'bg-[#1E293B] border-[#FEF08A] shadow-[3px_3px_0px_#1833FF] scale-[1.02]'
+                          : 'bg-[#0B0F19] border-slate-800 hover:border-slate-700 opacity-70 hover:opacity-100'
+                      }`}
+                      whileHover={{ y: -2 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      <div className="relative w-full h-11 rounded-lg overflow-hidden bg-slate-900 border border-white/10 mb-1">
+                        <img
+                          src={getImageSource(item)}
+                          alt={item.title}
+                          className="w-full h-full object-cover object-top"
+                          onError={() => {
+                            setImageErrors((prev) => ({ ...prev, [item.id]: true }))
+                          }}
+                        />
+                        {isActive && (
+                          <div className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#FEF08A] shadow-[0_0_6px_#FEF08A]" />
+                        )}
+                      </div>
+                      <span
+                        className={`font-mono text-[9px] truncate block w-full ${
+                          isActive ? 'text-[#FEF08A] font-bold' : 'text-slate-300'
+                        }`}
+                      >
+                        {item.title}
+                      </span>
+                    </motion.button>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -236,9 +331,9 @@ export default function ProjectGallery({
         items={items}
         currentIndex={currentIndex}
         onClose={() => setLightboxOpen(false)}
-        onNext={handleNext}
-        onPrev={handlePrev}
-        onSelectIndex={(idx) => setCurrentIndex(idx)}
+        onNext={() => paginate(1)}
+        onPrev={() => paginate(-1)}
+        onSelectIndex={(idx) => jumpTo(idx)}
       />
     </>
   )

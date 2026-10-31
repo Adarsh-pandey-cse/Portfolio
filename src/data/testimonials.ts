@@ -40,10 +40,10 @@ export const testimonials: Testimonial[] = [
   {
     id: '5',
     quote:
-      "Our textile brand's identity was perfectly captured in the hang tag designs. The vector precision and industrial design standards were spot on.",
-    author: 'Raghav Heritage Owner',
-    role: 'Business Principal',
-    project: 'Raghav Heritage',
+      'The complete brand identity, luxury gold business cards, and 8-page editorial catalog elevated Walls & Window Spaces to an elite tier in interior solutions. The craftsmanship and attention to detail are world-class.',
+    author: 'Punit Singh',
+    role: 'Principal Founder',
+    project: 'Walls & Window Spaces',
     bgColor: '#DDD6FE',
   },
   {
