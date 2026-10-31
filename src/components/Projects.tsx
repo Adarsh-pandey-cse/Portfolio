@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ExternalLink, ArrowRight } from 'lucide-react'
+import { ExternalLink, ArrowRight, Sparkles } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { projects } from '../data/projects'
 import type { Project } from '../types'
 import MotionReveal from './MotionReveal'
@@ -19,12 +20,23 @@ const filters: { key: FilterKey; label: string; hoverBg: string }[] = [
 
 function ProjectCard({ project }: { project: Project }) {
   const [hovered, setHovered] = useState(false)
+  const navigate = useNavigate()
+
+  const isCaseStudy = Boolean(project.caseStudyUrl)
 
   const href = project.liveUrl
     ? project.liveUrl
     : project.waMessage
     ? `${WA_BASE}${encodeURIComponent(project.waMessage)}`
     : '#'
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // If click was on an anchor or button, let native action happen
+    if ((e.target as HTMLElement).closest('a, button')) return
+    if (isCaseStudy && project.caseStudyUrl) {
+      navigate(project.caseStudyUrl)
+    }
+  }
 
   return (
     <motion.div
@@ -34,7 +46,10 @@ function ProjectCard({ project }: { project: Project }) {
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ y: -6, scale: 1.012, boxShadow: '7px 7px 0px #111111' }}
       transition={{ type: 'spring', stiffness: 450, damping: 22 }}
-      className="flex flex-col p-space-md border-2 border-border-dark rounded-2xl shadow-[4px_4px_0px_#111111] transition-all cursor-default"
+      onClick={handleCardClick}
+      className={`flex flex-col p-space-md border-2 border-border-dark rounded-2xl shadow-[4px_4px_0px_#111111] transition-all ${
+        isCaseStudy ? 'cursor-pointer' : 'cursor-default'
+      }`}
       style={{ backgroundColor: project.bgColor }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -44,9 +59,17 @@ function ProjectCard({ project }: { project: Project }) {
         <span className="font-mono text-label-sm uppercase tracking-wider text-ink-black font-bold">
           {project.categoryLabel}
         </span>
-        <span className="px-2 py-0.5 bg-ink-black text-white font-mono text-label-sm rounded uppercase">
-          {project.statusLabel}
-        </span>
+        <div className="flex items-center gap-1.5">
+          {isCaseStudy && (
+            <span className="px-2 py-0.5 bg-[#1833FF] text-white font-mono text-[9px] font-bold rounded uppercase flex items-center gap-1 shadow-[1px_1px_0px_#111111]">
+              <Sparkles size={10} />
+              Case Study
+            </span>
+          )}
+          <span className="px-2 py-0.5 bg-ink-black text-white font-mono text-label-sm rounded uppercase">
+            {project.statusLabel}
+          </span>
+        </div>
       </div>
 
       {/* Cover image / colored placeholder */}
@@ -69,6 +92,11 @@ function ProjectCard({ project }: { project: Project }) {
               </span>
             ))}
           </div>
+          {isCaseStudy && (
+            <span className="mt-1 px-2.5 py-0.5 bg-white border border-border-dark rounded-full font-mono text-[9.5px] font-bold text-ink-black shadow-[1px_1px_0px_#111111]">
+              Dedicated Product Case Study ↗
+            </span>
+          )}
         </div>
 
         {/* Hover overlay */}
@@ -113,16 +141,29 @@ function ProjectCard({ project }: { project: Project }) {
               ? 'Motion Film'
               : 'Campus'}
           </span>
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3.5 py-1.5 bg-ink-black text-white hover:bg-primary border-2 border-border-dark rounded-full font-mono text-label-sm flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_#111111]"
-            aria-label={`View ${project.title}`}
-          >
-            <span>{project.liveUrl ? 'Visit' : 'Inquire'}</span>
-            {project.liveUrl ? <ExternalLink size={13} /> : <ArrowRight size={13} />}
-          </a>
+
+          {/* Action button: routes to /projects/attendx if case study, or external URL */}
+          {isCaseStudy ? (
+            <Link
+              to={project.caseStudyUrl!}
+              className="px-3.5 py-1.5 bg-ink-black text-white hover:bg-primary border-2 border-border-dark rounded-full font-mono text-label-sm flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_#111111] cursor-pointer"
+              aria-label={`View ${project.title} Case Study`}
+            >
+              <span>Visit</span>
+              <ArrowRight size={13} />
+            </Link>
+          ) : (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3.5 py-1.5 bg-ink-black text-white hover:bg-primary border-2 border-border-dark rounded-full font-mono text-label-sm flex items-center gap-1.5 transition-colors shadow-[2px_2px_0px_#111111]"
+              aria-label={`View ${project.title}`}
+            >
+              <span>{project.liveUrl ? 'Visit' : 'Inquire'}</span>
+              {project.liveUrl ? <ExternalLink size={13} /> : <ArrowRight size={13} />}
+            </a>
+          )}
         </div>
       </div>
     </motion.div>

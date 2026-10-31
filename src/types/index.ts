@@ -11,6 +11,7 @@ export interface Project {
   status: 'live' | 'in-progress' | 'delivered' | 'concept'
   statusLabel: string
   liveUrl?: string
+  caseStudyUrl?: string
   waMessage?: string
   bgColor: string
   accentColor: string

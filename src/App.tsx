@@ -1,54 +1,39 @@
-import Navigation from './components/Navigation'
-import Hero from './components/Hero'
-import About from './components/About'
-import TickerStrip from './components/TickerStrip'
-import Projects from './components/Projects'
-import Services from './components/Services'
-import Process from './components/Process'
-import CampusLeadership from './components/CampusLeadership'
-import Gallery from './components/Gallery'
-import Testimonials from './components/Testimonials'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import WhatsAppFAB from './components/WhatsAppFAB'
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
+import { useEffect } from 'react'
+import HomePage from './pages/HomePage'
+import AttendXPage from './pages/AttendXPage'
+
+function ScrollHandler() {
+  const { pathname, hash } = useLocation()
+
+  useEffect(() => {
+    if (hash) {
+      // Small timeout to allow target element to mount if coming from another route
+      const timer = setTimeout(() => {
+        const el = document.querySelector(hash)
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth' })
+        }
+      }, 70)
+      return () => clearTimeout(timer)
+    } else {
+      window.scrollTo(0, 0)
+    }
+  }, [pathname, hash])
+
+  return null
+}
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-background text-on-surface flex flex-col selection:bg-secondary-container selection:text-ink-black">
-      <Navigation />
-      <main className="flex-1 w-full flex flex-col">
-        {/* Main Home Page / Hero Section with docked featured works */}
-        <Hero />
-
-        {/* About Section placed immediately below Hero (Education, Certifications, Skills) */}
-        <About />
-
-        {/* Dynamic Multi-Disciplinary Ticker Strip */}
-        <TickerStrip />
-
-        {/* Selected Projects Showcase */}
-        <Projects />
-
-        {/* Core Services */}
-        <Services />
-
-        {/* Capabilities & Recruiter Dossier Matrix */}
-        <Process />
-
-        {/* Campus Leadership & Community Proofs */}
-        <CampusLeadership />
-
-        {/* Design & Motion Gallery */}
-        <Gallery />
-
-        {/* Testimonials & Endorsements */}
-        <Testimonials />
-
-        {/* Contact Section placed at the very last */}
-        <Contact />
-      </main>
-      <Footer />
-      <WhatsAppFAB />
-    </div>
+    <BrowserRouter>
+      <ScrollHandler />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/projects/attendx" element={<AttendXPage />} />
+        {/* Fallback back to HomePage */}
+        <Route path="*" element={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
   )
 }

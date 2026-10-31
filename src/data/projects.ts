@@ -15,6 +15,7 @@ export const projects: Project[] = [
     status: 'live',
     statusLabel: 'Live V2.4',
     liveUrl: 'https://attendx9.netlify.app',
+    caseStudyUrl: '/projects/attendx',
     bgColor: '#FEF08A',
     accentColor: '#111111',
     featured: true,
